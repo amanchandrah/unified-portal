@@ -1,1 +1,1 @@
-{"/_not-found/page":"/_not-found","/about/page":"/about","/api/admin-log/route":"/api/admin-log","/Internal/page":"/Internal","/home/page":"/home","/api/isAdmin/route":"/api/isAdmin","/api/auth/[...nextauth]/route":"/api/auth/[...nextauth]","/page":"/","/updates/page":"/updates"}
+{"/_not-found/page":"/_not-found","/about/page":"/about","/api/admin-log/route":"/api/admin-log","/api/isAdmin/route":"/api/isAdmin","/Internal/page":"/Internal","/api/auth/[...nextauth]/route":"/api/auth/[...nextauth]","/page":"/","/home/page":"/home","/updates/page":"/updates"}
