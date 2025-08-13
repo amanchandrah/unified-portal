@@ -1,4 +1,6 @@
 // src/app/layout.js
+import 'next/font/google';
+import '@fontsource/audiowide/400.css';
 import { Audiowide } from 'next/font/google';
 import AuthProvider from './providers';
 import './globals.css';
@@ -11,7 +13,7 @@ const audiowide = Audiowide({
 
 export const metadata = {
   title: 'Unified | Outreach and Hospitality',
-  description: 'Centralized app for O&H IITM Paradox',
+  description: 'Centralized app for Department of Outreach and Hospitality | IITM Paradox',
   icons: {
     icon: '/images/logoo.png',
   },
