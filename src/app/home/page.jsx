@@ -3,6 +3,8 @@ import { Audiowide } from 'next/font/google';
 import { useSearchParams } from "next/navigation";
 
 
+
+
 const audiowide = Audiowide({
     subsets: ['latin'],
     weight: '400',
@@ -20,21 +22,22 @@ function MainComponent() {
     const [showRecruitmentPopup, setShowRecruitmentPopup] = useState(false);
     const [showInternalPopup, setShowInternalPopup] = useState(false);
     const { data: session } = useSession();
-    const searchParams = useSearchParams();
     const [showSuccess, setShowSuccess] = useState(false);
     const [showBlackout, setShowBlackout] = useState(false);
     
     useEffect(() => {
-      if (searchParams.get("success") === "true") {
-        setShowBlackout(true);
-        setShowSuccess(true);
-    
-        // blackout disappears after 1 s
-        setTimeout(() => setShowBlackout(false), 1000);
-        // toast disappears after 1.5 s
-        setTimeout(() => setShowSuccess(false), 1500);
+      // Only run on client side
+      if (typeof window !== 'undefined') {
+        const params = new URLSearchParams(window.location.search);
+        if (params.get("success") === "true") {
+          setShowBlackout(true);
+          setShowSuccess(true);
+          
+          setTimeout(() => setShowBlackout(false), 1000);
+          setTimeout(() => setShowSuccess(false), 1500);
+        }
       }
-    }, [searchParams]);
+    }, []);
 
     const toggleMenu = () => {
         setIsMenuOpen(!isMenuOpen);
