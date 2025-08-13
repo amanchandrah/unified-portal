@@ -1,10 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
 import { Audiowide } from "next/font/google";
-
-
 
 const audiowide = Audiowide({
   subsets: ["latin"],
@@ -21,21 +18,7 @@ export default function LoginPage() {
     paradox: false,
     button: false,
     restricted: false,
-    
   });
-  const { data: session, status } = useSession();
-  const router = useRouter();
-
-  useEffect(() => {
-    if (status === "authenticated") {
-      router.push("/home");
-    }
-  }, [status, router]);
-
-  if (status === "authenticated") {
-    return null; // Or a loading spinner
-  }
-
 
   // Typewriter effect
   useEffect(() => {
