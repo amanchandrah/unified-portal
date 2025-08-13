@@ -234,7 +234,7 @@ function MainComponent() {
                                         Logged in as {session.user.email}
                                     </span>
                                     <button
-                                        onClick={() => signOut({ callbackUrl: "/login" })}
+                                        onClick={() => signOut({ callbackUrl: "/" })}
                                         className="text-sm text-[#ff0000] hover:text-red-400 font-['audiowide'] transition-colors drop-shadow-[0_0_4px_#ff0000]"
                                     >
                                         Logout
