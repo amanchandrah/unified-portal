@@ -55,9 +55,10 @@ export default function LoginPage() {
     const resize = () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
-      cols = Math.floor(canvas.width / 20);
+      cols = Math.ceil(canvas.width / 20);   // ← ONLY this line changed
       drops = Array(cols).fill(0);
     };
+    
     const draw = () => {
       ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
       ctx.fillRect(0, 0, canvas.width, canvas.height);
