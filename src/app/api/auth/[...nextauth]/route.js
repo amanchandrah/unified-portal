@@ -44,7 +44,7 @@ const handler = NextAuth({
       return session;
     },
     async redirect({ url, baseUrl }) {
-      return baseUrl + "/home?success=true"; // ← only change
+      return `${baseUrl}/home?success=true`; // ← only change
     },
   },
 });
