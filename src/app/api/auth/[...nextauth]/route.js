@@ -5,13 +5,20 @@ import { FirestoreAdapter } from "@auth/firebase-adapter";
 import admin from "firebase-admin";
 import { getFirestore } from "firebase-admin/firestore";
 
+// Initialize Firebase Admin if not already initialized
 if (!admin.apps.length) {
+  if (!process.env.FIREBASE_SERVICE_KEY) {
+    throw new Error("FIREBASE_SERVICE_KEY is not defined!");
+  }
+
   const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_KEY);
+
   admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
   });
 }
 
+// Configure NextAuth
 const handler = NextAuth({
   providers: [
     GoogleProvider({
@@ -37,7 +44,7 @@ const handler = NextAuth({
       return session;
     },
     async redirect({ url, baseUrl }) {
-      return baseUrl + "/home?success=true";   // ← only change
+      return baseUrl + "/home?success=true"; // ← only change
     },
   },
 });
