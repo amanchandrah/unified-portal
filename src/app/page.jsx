@@ -82,7 +82,7 @@ export default function LoginPage() {
     };
   }, []);
 
-  const handleGoogleLogin = () => signIn("google", { callbackUrl: "/home" });
+  const handleGoogleLogin = () => signIn("google", { callbackUrl: "/home", redirect: true });
 
   return (
     <div className={`min-h-screen bg-black flex flex-col relative overflow-hidden ${audiowide.className}`}>
