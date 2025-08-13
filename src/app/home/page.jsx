@@ -1,6 +1,10 @@
 "use client";
 import { Audiowide } from 'next/font/google';
 import { useSearchParams } from "next/navigation";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+
 
 
 
@@ -21,10 +25,25 @@ function MainComponent() {
     const [activeSection, setActiveSection] = useState("outreach");
     const [showRecruitmentPopup, setShowRecruitmentPopup] = useState(false);
     const [showInternalPopup, setShowInternalPopup] = useState(false);
-    const { data: session } = useSession();
+   
     const [showSuccess, setShowSuccess] = useState(false);
     const [showBlackout, setShowBlackout] = useState(false);
+
+  
+  const { data: session, status } = useSession();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      router.push("/");
+    }
+  }, [status, router]);
+
+  if (status !== "authenticated") {
+    return null; // Or a loading spinner
+  }
     
+  
     useEffect(() => {
       // Only run on client side
       if (typeof window !== 'undefined') {

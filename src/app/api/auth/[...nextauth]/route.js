@@ -5,7 +5,7 @@ import { FirestoreAdapter } from "@auth/firebase-adapter";
 import admin from "firebase-admin";
 import { getFirestore } from "firebase-admin/firestore";
 
-// Initialize Firebase Admin if not already initialized
+// Initialize Firebase Admin
 if (!admin.apps.length) {
   if (!process.env.FIREBASE_SERVICE_KEY) {
     throw new Error("FIREBASE_SERVICE_KEY is not defined!");
@@ -18,7 +18,6 @@ if (!admin.apps.length) {
   });
 }
 
-// Configure NextAuth
 const handler = NextAuth({
   providers: [
     GoogleProvider({
@@ -27,7 +26,22 @@ const handler = NextAuth({
     }),
   ],
   adapter: FirestoreAdapter(getFirestore()),
-  session: { strategy: "jwt" },
+  session: {
+    strategy: "jwt",
+    maxAge: 30 * 24 * 60 * 60, // 30 days
+  },
+  cookies: {
+    sessionToken: {
+      name: `__Secure-next-auth.session-token`,
+      options: {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        secure: true, // Ensure this is true in production
+        domain: process.env.NEXTAUTH_URL?.replace(/https?:\/\//, "") || null,
+      },
+    },
+  },
   callbacks: {
     async signIn({ profile }) {
       const email = profile.email;
@@ -44,8 +58,15 @@ const handler = NextAuth({
       return session;
     },
     async redirect({ url, baseUrl }) {
-      return `${baseUrl}/home?success=true`; // ← only change
+      // Allows relative callback URLs
+      if (url.startsWith("/")) return `${baseUrl}${url}`
+      // Allows callback URLs on the same origin
+      else if (new URL(url).origin === baseUrl) return url
+      return `${baseUrl}/home?success=true`
     },
+  },
+  pages: {
+    signIn: '/', // Set your login page path
   },
 });
 
