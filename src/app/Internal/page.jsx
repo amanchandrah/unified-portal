@@ -167,6 +167,21 @@ function InternalMainComponent()  {
                     <i className="fas fa-info-circle mr-2"></i>
                     About
                   </a>
+                  {session && (
+                    <>
+                      <hr className="border-t border-[#00ffc3]/30" />
+                      <p className="text-sm text-[#a9adc1]">
+                        Logged in as {session.user.email}
+                      </p>
+                      <button
+                        onClick={() => signOut({ callbackUrl: "/" })}
+                        className="text-[#ff0000] hover:text-red-400 transition-colors font-['audiowide'] flex items-center"
+                      >
+                        <i className="fas fa-sign-out-alt mr-2" />
+                        Logout
+                      </button>
+                    </>
+                  )}
                 </div>
               </div>
             </div>

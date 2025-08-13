@@ -125,10 +125,10 @@ export default function LoginPage() {
             showElements.department ? "opacity-100" : "opacity-0"
           }`}
         >
-          <p className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl text-[#a9adc1] font-bold leading-tight tracking-wide drop-shadow-[0_0_15px_rgba(169,173,193,0.3)] whitespace-nowrap overflow-hidden">
-            {typewriterText}
-            <span className="animate-pulse text-[#a9adc1]">|</span>
-          </p>
+         <p className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl text-[#a9adc1] font-bold leading-tight tracking-wide drop-shadow-[0_0_15px_rgba(169,173,193,0.3)] break-words px-4">
+  {typewriterText}
+  <span className="animate-pulse text-[#a9adc1]">|</span>
+</p>
         </div>
 
         {/* IITM PARADOX */}
