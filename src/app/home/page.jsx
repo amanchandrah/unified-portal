@@ -247,8 +247,12 @@ function MainComponent() {
 
 
 
-            {/* Hamburger Button */}
-            <button
+         
+           
+
+          {/* Mobile Menu */}
+          {/* Hamburger button – unchanged */}
+          <button
               onClick={toggleMenu}
               className="md:hidden text-[#00ffc3] hover:text-[#00d4a3] transition-colors focus:outline-none"
             >
@@ -259,18 +263,6 @@ function MainComponent() {
             </button>
           </div>
 
-
-
-          {/* Mobile Menu */}
-          {/* Hamburger button – unchanged */}
-          <button
-            onClick={toggleMenu}
-            className="md:hidden text-[#00ffc3] hover:text-[#00d4a3] transition-colors focus:outline-none"
-          >
-            <i
-              className={`fas ${isMenuOpen ? "fa-times" : "fa-bars"} text-2xl`}
-            />
-          </button>
 
 
           {/* Mobile Menu */}
