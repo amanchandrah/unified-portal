@@ -1,23 +1,26 @@
 // src/app/layout.js
-import { Inter } from 'next/font/google';
+import { Audiowide } from 'next/font/google';
 import AuthProvider from './providers';
 import './globals.css';
 
-const inter = Inter({ subsets: ['latin'] });
+const audiowide = Audiowide({
+  subsets: ['latin'],
+  weight: '400',
+  variable: '--font-audiowide', // CSS variable name
+});
 
 export const metadata = {
   title: 'Unified | Outreach and Hospitality',
   description: 'Centralized app for O&H IITM Paradox',
   icons: {
-    icon: '/images/logoo.png',   // ✅ favicon
+    icon: '/images/logoo.png',
   },
 };
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
-      {/* <head> is automatically injected by Next.js */}
-      <body className={inter.className}>
+    <html lang="en" className={`${audiowide.variable}`}>
+      <body className="font-[var(--font-audiowide)]">
         <AuthProvider>{children}</AuthProvider>
       </body>
     </html>
