@@ -28,21 +28,24 @@ export default function LoginPage() {
     const timer = setInterval(() => {
       setTypewriterText(text.slice(0, idx));
       idx++;
-      if (idx > text.length) clearInterval(timer);
+      if (idx > text.length) {
+        clearInterval(timer);
+        // ONLY trigger the rest once typewriter is 100 % done
+        setTimeout(() => setShowElements((p) => ({ ...p, paradox: true })), 0);
+        setTimeout(() => setShowElements((p) => ({ ...p, button: true })), 500);
+        setTimeout(() => setShowElements((p) => ({ ...p, restricted: true })), 1000);
+      }
     }, 80);
     return () => clearInterval(timer);
   }, [showElements.department]);
 
-  // Staggered reveal timers
+  // Staggered reveal timers (only for logo → unified → portal → department)
   useEffect(() => {
     const t = [];
     t.push(setTimeout(() => setShowElements((p) => ({ ...p, logo: true })), 500));
     t.push(setTimeout(() => setShowElements((p) => ({ ...p, unified: true })), 1000));
     t.push(setTimeout(() => setShowElements((p) => ({ ...p, portal: true })), 1500));
     t.push(setTimeout(() => setShowElements((p) => ({ ...p, department: true })), 2000));
-    t.push(setTimeout(() => setShowElements((p) => ({ ...p, paradox: true })), 2500));
-    t.push(setTimeout(() => setShowElements((p) => ({ ...p, button: true })), 3000));
-    t.push(setTimeout(() => setShowElements((p) => ({ ...p, restricted: true })), 3500));
     return () => t.forEach(clearTimeout);
   }, []);
 
@@ -55,7 +58,7 @@ export default function LoginPage() {
     const resize = () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
-      cols = Math.ceil(canvas.width / 20);   // ← ONLY this line changed
+      cols = Math.ceil(canvas.width / 20);
       drops = Array(cols).fill(0);
     };
     
