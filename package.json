@@ -1,0 +1,30 @@
+{
+  "name": "unified-portal",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@auth/firebase-adapter": "^2.10.0",
+    "@fontsource/audiowide": "^5.2.6",
+    "@heroicons/react": "^2.2.0",
+    "firebase": "^11.10.0",
+    "firebase-admin": "^12.7.0",
+    "next": "^14.2.30",
+    "next-auth": "^4.24.11",
+    "react": "^18",
+    "react-dom": "^18"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.15",
+    "@types/react": "^19.1.8",
+    "autoprefixer": "^10.0.1",
+    "postcss": "^8",
+    "tailwindcss": "^3.3.0",
+    "typescript": "^5.8.3"
+  }
+}
