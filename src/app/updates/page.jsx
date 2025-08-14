@@ -252,11 +252,11 @@ export default function UpdatesPage() {
     <div id="morphStage"
          class="relative w-[90vw] max-w-[320px] sm:w-[80vw] sm:max-w-[280px] md:max-w-3xl aspect-[16/9] flex items-center justify-center">
       <i id="dragonCore"
-         class="fas fa-dragon text-6xl sm:text-7xl md:text-8xl text-red-500 absolute">
+         class="fas fa-dragon text-3xl sm:text-4xl md:text-5xl text-red-500 absolute">
       </i>
       ${[...Array(3)].map((_, i) => `
           <div class="magic-ring absolute rounded-full border-2 border-red-500/50"
-               style="--delay:${i * 0.4}s; --size:${240 + i * 100}px;
+               style="--delay:${i * 0.4}s; --size:${100 + i * 100}px;
                       width:var(--size); height:var(--size);
                       animation:spin 3s var(--delay) linear infinite;">
           </div>`).join('')}
