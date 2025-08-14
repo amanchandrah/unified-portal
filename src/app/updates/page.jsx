@@ -5,7 +5,6 @@
 import React, { useState, useEffect } from "react";
 import { signInWithEmailAndPassword, onAuthStateChanged, signOut } from "firebase/auth";
 import { auth, db } from "@/utilities/firebase";
-import { app } from "@/firebase/config";
 
 import {
   collection,
@@ -230,163 +229,161 @@ export default function UpdatesPage() {
   /* ---------- DRAGON LOGIN ---------- */
   /* ---------- DRAGON LOGIN (patch) ---------- */
   const openDragonLogin = () => {
-    /* --- lockout guard --- */
-    const now = Date.now();
-    const lock = Number(localStorage.getItem("lockoutTime")) || 0;
-    if (now < lock) {
-      alert(`System locked. Wait ${Math.ceil((lock - now) / 1000)}s`);
+
+    let loginMinimized = false;   
+    let loginVisible = true;    
+  
+    const savedLockout = localStorage.getItem('lockoutTime');
+    if (savedLockout && Date.now() < parseInt(savedLockout)) {
+      const rem = Math.ceil((parseInt(savedLockout) - Date.now()) / 1000);
+      alert(`System locked. Wait ${rem}s`);
+      return;
+    }
+    if (lockoutTime && Date.now() < lockoutTime) {
+      const rem = Math.ceil((lockoutTime - Date.now()) / 1000);
+      alert(`System locked. Wait ${rem}s`);
       return;
     }
   
-    /* --- create full-screen portal --- */
     const portal = document.createElement("div");
-    portal.id = "dragonPortal";
-    portal.className =
-      "fixed inset-0 z-[9999] bg-black flex items-center justify-center overflow-hidden";
+    portal.id = "dragonPortalRoot";
+    portal.className = "fixed inset-0 z-[9999] bg-black flex items-center justify-center";
+    portal.innerHTML = /*html*/`
+    <div id="morphStage"
+         class="relative w-[90vw] max-w-[320px] sm:w-[80vw] sm:max-w-[280px] md:max-w-3xl aspect-[16/9] flex items-center justify-center">
+      <i id="dragonCore"
+         class="fas fa-dragon text-6xl sm:text-7xl md:text-8xl text-red-500 absolute">
+      </i>
+      ${[...Array(3)].map((_, i) => `
+          <div class="magic-ring absolute rounded-full border-2 border-red-500/50"
+               style="--delay:${i * 0.4}s; --size:${240 + i * 100}px;
+                      width:var(--size); height:var(--size);
+                      animation:spin 3s var(--delay) linear infinite;">
+          </div>`).join('')}
+    </div>
+    `;
   
-    /* red binary rain canvas */
-    const canvas = document.createElement("canvas");
-    canvas.id = "redRain";
-    canvas.className = "absolute inset-0 w-full h-full pointer-events-none";
-    portal.appendChild(canvas);
+    const fontLink = document.createElement('link');
+    fontLink.rel = 'stylesheet';
+    fontLink.href = 'https://fonts.googleapis.com/css2?family=Creepster&display=swap';
+    document.head.appendChild(fontLink);
   
-    /* fonts */
-    ["https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css",
-     "https://fonts.googleapis.com/css2?family=Audiowide&display=swap"]
-      .forEach((href) => {
-        const l = document.createElement("link");
-        l.rel = "stylesheet";
-        l.href = href;
-        document.head.appendChild(l);
-      });
-  
-    /* CSS once */
     const style = document.createElement("style");
-    style.innerHTML = `
-      body{overflow:hidden}
-      @keyframes spin{from{transform:translate(-50%,-50%) rotate(0deg)}to{transform:translate(-50%,-50%) rotate(360deg)}}
-      @keyframes fadeIn{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
-      .ring{position:absolute;top:50%;left:50%;border:2px solid #ff004080;border-radius:50%;animation:spin 3s linear infinite}
-      .glass{background:#1a000099;border:1px solid #ff004066;backdrop-filter:blur(10px);border-radius:1rem;box-shadow:0 0 50px #ff004066}
-      @media(max-width:639px){.glass{border-radius:0;border:none;width:100vw;height:100vh}}
+    style.textContent = `
+      @keyframes spin{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
+  
+      @keyframes bg-grid-red {
+        0% { background-position: 0 0; }
+        100% { background-position: 50px 50px; }
+      }
+  
+      @media (max-width: 640px) {
+        .cyber-grid,.cyber-scan,.cyber-particles,.cyber-input-border{display:none!important}
+        .fa-dragon{font-size:4rem!important}
+        .cyber-text,.cyber-subtext{font-size:1.5rem!important}
+        #dragonEmail,#dragonPassword,.cyber-button{font-size:1.25rem!important;padding-top:.75rem!important;padding-bottom:.75rem!important}
+      }
+  
+      @media (max-width: 480px) {
+        #dragonEmail, #dragonPassword {
+          font-size: 1.125rem;
+          padding: 1rem;
+        }
+        .cyber-text, .cyber-subtext {
+          font-size: 1.25rem;
+        }
+        .fa-dragon {
+          font-size: 5rem;
+        }
+        button[type="submit"] {
+          padding: 1rem 2rem;
+          font-size: 1.25rem;
+        }
+      }
     `;
     document.head.appendChild(style);
-  
-    /* markup */
-    portal.innerHTML += `
-      <div class="relative z-10 flex flex-col items-center justify-center w-full h-full">
-        <!-- 3 red rings + dragon icon -->
-        <div id="ringsWrap" class="absolute inset-0 flex items-center justify-center">
-          <div class="ring" style="width:20vmin;height:20vmin"></div>
-          <div class="ring" style="width:28vmin;height:28vmin;animation-delay:.4s"></div>
-          <div class="ring" style="width:36vmin;height:36vmin;animation-delay:.8s"></div>
-          <i class="fas fa-dragon text-red-500 text-[15vmin] animate-pulse"></i>
-        </div>
-  
-        <!-- glass card -->
-        <div id="loginCard" class="glass w-full max-w-[480px] p-8 md:p-12 animate-[fadeIn_.7s_ease-in-out]">
-          <button id="closeBtn" class="absolute top-4 right-4 text-red-500 hover:text-red-300 text-3xl transform hover:rotate-90 transition-transform">
-            <i class="fas fa-times"></i>
-          </button>
-  
-          <div class="text-center mb-6">
-            <i class="fas fa-skull-crossbones text-red-500 text-6xl mb-4"></i>
-            <h2 class="font-['Audiowide'] text-red-500 text-3xl sm:text-4xl md:text-5xl mb-2">DARK REALM ACCESS</h2>
-            <p class="font-['Audiowide'] text-red-400 text-lg sm:text-xl mb-8">Welcome To Forbidden Gateway</p>
-          </div>
-  
-          <form id="dragonForm" class="flex flex-col space-y-6">
-            <input  id="dragonEmail"  type="email"  placeholder="ENTER DEATH ID..." required
-                    class="w-full bg-[#0f0000] border border-red-600 rounded-lg py-4 px-4 text-red-300 placeholder-red-900 font-['Audiowide'] text-xl focus:outline-none focus:ring-2 focus:ring-red-500" />
-            <input  id="dragonPassword"  type="password"  placeholder="SPEAK THE FORBIDDEN WORDS..." required
-                    class="w-full bg-[#0f0000] border border-red-600 rounded-lg py-4 px-4 text-red-300 placeholder-red-900 font-['Audiowide'] text-xl focus:outline-none focus:ring-2 focus:ring-red-500" />
-            <button type="submit"
-                    class="w-full bg-[#1a0000] border-2 border-red-600 rounded-lg py-4 font-['Audiowide'] text-red-400 text-xl tracking-widest hover:bg-red-900/30 active:scale-[0.98] transition-all">
-              <i class="fas fa-skull-crossbones mr-2"></i> ENTER THE MORTAL GATE
-            </button>
-          </form>
-        </div>
-      </div>
-    `;
-  
     document.body.appendChild(portal);
   
-    /* red rain loop - fixed to use vanilla JS */
-    const ctx = canvas.getContext("2d");
-    let frame = null;
-    let resizeHandler = null;
+    setTimeout(() => {
+      const morph = portal.querySelector("#morphStage");
+      morph.style.transition = "transform .7s ease-in-out";
+      morph.style.transform = "scale(0)";
+      setTimeout(() => {
+        morph.innerHTML = `
+          <div class="bg-[#1a0000] p-4 rounded-lg border-2 border-red-600 w-[90vw] max-w-[320px] mx-auto max-h-[60vh] sm:p-4 sm:max-w-sm sm:max-h-[75vh] md:p-12 md:max-w-4xl md:max-h-none md:border-4 relative shadow-[0_0_50px_#ff0000]">
+    
+            <button id="portalBackBtn" class="absolute top-6 right-6 text-red-600 hover:text-red-400 cursor-pointer z-20 text-2xl transform hover:rotate-90 transition-transform duration-300">
+              <i class="fas fa-times"></i>
+            </button>
+    
+            <div class="relative z-10 text-center">
+              <div class="mb-12">
+                <i class="fas fa-dragon text-red-600 text-8xl mb-8 block cyber-glow"></i>
+                <h3 class="text-red-600 text-5xl font-bold font-['Audiowide'] cyber-text mb-4">
+                  DARK REALM ACCESS
+                </h3>
+                <p class="text-red-400 text-xl font-audiowide mb-8 cyber-subtext">
+                  Welcome To Forbidden Gateway
+                </p>
+              </div>
+    
+              <form id="dragonLoginForm" class="max-w-lg mx-auto space-y-8">
+                <div class="relative">
+                  <div class="cyber-input-border"></div>
+                  <input type="email" id="dragonEmail" placeholder="ENTER DEATH ID..." required
+                         class="w-full bg-[#0f0000] text-red-600 border-2 border-red-600 rounded-lg py-4 px-6 focus:outline-none focus:ring-4 focus:ring-red-600 placeholder-red-900 text-2xl font-['Audiowide'] tracking-wider"/>
+                </div>
   
-    if (ctx) {
-      let cols;
-      let drops = [];
+                <div class="relative">
+                  <div class="cyber-input-border"></div>
+                  <input type="password" id="dragonPassword" placeholder="SPEAK THE FORBIDDEN WORDS..." required
+                         class="w-full bg-[#0f0000] text-red-600 border-2 border-red-600 rounded-lg py-4 px-6 focus:outline-none focus:ring-4 focus:ring-red-600 placeholder-red-900 text-2xl font-['Audiowide'] tracking-wider"/>
+                </div>
   
-      const fit = () => {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-        cols = Math.floor(canvas.width / 20);
-        drops = Array(cols).fill(0);
-      };
-  
-      const draw = () => {
-        ctx.fillStyle = "rgba(0,0,0,0.05)";
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = "#ff0040";
-        ctx.font = "15px monospace";
-        ctx.textAlign = "center";
-        for (let i = 0; i < cols; i++) {
-          const x = i * 20;
-          const y = drops[i] * 20;
-          ctx.fillText(Math.random() > 0.5 ? "0" : "1", x, y);
-          if (y > canvas.height && Math.random() > 0.975) drops[i] = 0;
-          drops[i]++;
-        }
-        frame = requestAnimationFrame(draw);
-      };
-  
-      fit();
-      frame = requestAnimationFrame(draw);
-      resizeHandler = fit;
-      window.addEventListener("resize", resizeHandler);
-    }
-  
-    /* close */
-    document.getElementById("closeBtn")?.addEventListener("click", () => {
-      if (frame) cancelAnimationFrame(frame);
-      if (resizeHandler) window.removeEventListener("resize", resizeHandler);
-      portal.remove();
-      style.remove();
-      document.body.style.overflow = "";
-    });
-  
-    /* submit */
-    document.getElementById("dragonForm")?.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      
-      const email = document.getElementById("dragonEmail")?.value.trim() || "";
-      const pass = document.getElementById("dragonPassword")?.value.trim() || "";
-      
-      try {
-        await signInWithEmailAndPassword(auth, email, pass);
-        if (frame) cancelAnimationFrame(frame);
-        if (resizeHandler) window.removeEventListener("resize", resizeHandler);
-        portal.remove();
-        style.remove();
-        document.body.style.overflow = "";
-        loginAttemptsRef.current = 0;
-        localStorage.removeItem("lockoutTime");
-        setLockoutTime(null);
-        triggerHackerGranted();
-      } catch (error) {
-        const newAttempts = loginAttemptsRef.current + 1;
-        loginAttemptsRef.current = newAttempts;
-        if (newAttempts >= 3) {
-          const lockoutEnd = Date.now() + 30000;
-          localStorage.setItem("lockoutTime", lockoutEnd.toString());
-          setLockoutTime(lockoutEnd);
-        }
-        await triggerAccessDenied(newAttempts);
-      }
-    });
+                <button type="submit"
+                  class="w-full relative bg-[#1a0000] border-2 border-red-600 rounded-none font-['Audiowide'] font-bold uppercase text-xl sm:text-2xl text-red-400 tracking-widest py-4 px-6 transition-all duration-200 hover:bg-red-900/30 hover:border-red-400 hover:text-red-200 active:scale-[0.98] active:bg-red-800/40">
+                  <span class="flex items-center justify-center">
+                    <i class="fas fa-skull-crossbones mr-2"></i>
+                    ENTER THE MORTAL GATE
+                  </span>
+                </button>
+              </form>
+            </div>
+          </div>
+        `;
+        morph.style.transform = "scale(1)";
+    
+        portal.querySelector("#portalBackBtn").onclick = () => {
+          portal.remove();
+          style.remove();
+        };
+    
+        portal.querySelector("#dragonLoginForm").addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const email = document.getElementById("dragonEmail").value.trim();
+          const pass = document.getElementById("dragonPassword").value.trim();
+    
+          try {
+            await signInWithEmailAndPassword(auth, email, pass);
+            portal.remove();
+            style.remove();
+            triggerHackerGranted();
+            loginAttemptsRef.current = 0;
+            setLockoutTime(null);
+          } catch {
+            const newAttempts = loginAttemptsRef.current + 1;
+            loginAttemptsRef.current = newAttempts;
+    
+            if (newAttempts >= 3) {
+              const lockoutEndTime = Date.now() + 30000;
+              setLockoutTime(lockoutEndTime);
+              localStorage.setItem('lockoutTime', lockoutEndTime.toString());
+            }
+            await triggerAccessDenied(newAttempts);
+          }
+        });
+      }, 700);
+    }, 1200);
   };
   
   
