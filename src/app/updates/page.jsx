@@ -248,14 +248,6 @@ export default function UpdatesPage() {
     const portal = document.createElement("div");
     portal.id = "dragonPortalRoot";
     portal.className = "fixed inset-0 z-[9999] bg-black flex items-center justify-center";
-
-    // Binary rain canvas
-const rainCanvas = document.createElement("canvas");
-rainCanvas.id = "rain-canvas";
-rainCanvas.className = "absolute inset-0 w-full h-full pointer-events-none z-0";
-portal.appendChild(rainCanvas);
-
-
     portal.innerHTML = /*html*/`
     <div id="morphStage"
          class="relative w-[90vw] max-w-[320px] sm:w-[80vw] sm:max-w-[280px] md:max-w-3xl aspect-[16/9] flex items-center justify-center">
@@ -311,38 +303,6 @@ portal.appendChild(rainCanvas);
     `;
     document.head.appendChild(style);
     document.body.appendChild(portal);
-
-
-    // 2️⃣  START THE RAIN
-const ctx = rainCanvas.getContext("2d");
-let cols, drops, frameId;
-
-const resize = () => {
-  rainCanvas.width = window.innerWidth;
-  rainCanvas.height = window.innerHeight;
-  cols = Math.ceil(rainCanvas.width / 20);
-  drops = Array(cols).fill(0);
-};
-
-const draw = () => {
-  ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
-  ctx.fillRect(0, 0, rainCanvas.width, rainCanvas.height);
-  ctx.font = "15px monospace";
-  ctx.textAlign = "center";
-  for (let i = 0; i < cols; i++) {
-    const x = i * 20;
-    const y = drops[i] * 20;
-    ctx.fillStyle = "#ff0040"; // red color
-    ctx.fillText(Math.random() > 0.5 ? "0" : "1", x, y);
-    if (y > rainCanvas.height) drops[i] = 0;
-    drops[i] += 0.3;
-  }
-  frameId = requestAnimationFrame(draw);
-};
-
-window.addEventListener("resize", resize);
-resize();
-draw();
   
     setTimeout(() => {
       const morph = portal.querySelector("#morphStage");
@@ -355,8 +315,6 @@ draw();
             <button id="portalBackBtn" class="absolute top-6 right-6 text-red-600 hover:text-red-400 cursor-pointer z-20 text-2xl transform hover:rotate-90 transition-transform duration-300">
               <i class="fas fa-times"></i>
             </button>
-            window.removeEventListener("resize", resize);
-cancelAnimationFrame(frameId);
     
             <div class="relative z-10 text-center">
               <div class="mb-12">
