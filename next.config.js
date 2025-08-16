@@ -1,10 +1,12 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   experimental: {
-    esmExternals: 'loose'
+    esmExternals: 'loose',
+    serverComponentsExternalPackages: ['firebase-admin'],
   },
   webpack: (config) => {
-    config.externals = [...config.externals, { canvas: "canvas" }]; // required to make pdfjs work
+    config.experiments = { ...config.experiments, asyncWebAssembly: true };
+    config.externals = [...(config.externals || []), { canvas: 'canvas' }];
     return config;
   },
 };

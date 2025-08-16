@@ -662,5 +662,11 @@ select {
     animation: pulse 1.5s infinite ease-in-out;
   }
 
-
+@keyframes typewriter {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+.animate-typewriter {
+  animation: typewriter 0.08s ease-in-out;
+}
   

@@ -1,6 +1,13 @@
 "use client";
 import { Audiowide } from 'next/font/google';
 import { useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
+
+
+
+    // <-- our new style file
+
+
 
 
 
@@ -10,7 +17,7 @@ const audiowide = Audiowide({
   weight: '400',
 });
 
-import React, { useState, useEffect } from "react";
+import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import { app } from "@/firebase/config";
 import { useSession, signOut } from "next-auth/react";
@@ -18,12 +25,65 @@ import { useSession, signOut } from "next-auth/react";
 
 function MainComponent() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const router = useRouter();
   const [activeSection, setActiveSection] = useState("outreach");
   const [showRecruitmentPopup, setShowRecruitmentPopup] = useState(false);
   const [showInternalPopup, setShowInternalPopup] = useState(false);
   const { data: session } = useSession();
   const [showSuccess, setShowSuccess] = useState(false);
   const [showBlackout, setShowBlackout] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [showVerify, setShowVerify] = useState(false);
+  const [verifyName, setVerifyName] = useState("");
+  const [verifyDept, setVerifyDept] = useState("");
+
+
+  const [userInfo, setUserInfo] = useState(null);
+
+  // TYPEWRITER EFFECT 
+
+  // inside your component, right after the JSX where you render the green block
+  useEffect(() => {
+    if (showVerify && userInfo) {
+      const el = document.getElementById("typewriter");
+      const card = document.getElementById("detailsCard");
+      if (!el || !card) return;
+
+      el.innerHTML = ""; // reset
+      const lines = [
+        { text: "Please wait… verifying your identity…", color: "text-red-400" },
+        { text: "Identity verified.", color: "text-green-400" },
+      ];
+      let lineIndex = 0;
+      let charIndex = 0;
+
+      const tick = () => {
+        if (lineIndex >= lines.length) {
+          card.classList.remove("opacity-0");
+          card.classList.add("opacity-100");
+          return;
+        }
+        const { text, color } = lines[lineIndex];
+        if (charIndex < text.length) {
+          const span = document.createElement("span");
+          span.className = color + " animate-typewriter";
+          span.textContent = text[charIndex];
+          el.appendChild(span);
+          charIndex++;
+          setTimeout(tick, 60);
+        } else {
+          lineIndex++;
+          charIndex = 0;
+          el.appendChild(document.createElement("br"));
+          setTimeout(tick, 400);
+        }
+      };
+      tick();
+    }
+  }, [showVerify, userInfo]);
+
+  // END OF TYPEWRITER 
+
 
   useEffect(() => {
     // Only run on client side
@@ -228,8 +288,7 @@ function MainComponent() {
               {/* LOGIN INFO  */}
 
               {session && (
-                <div className="fixed bottom-4 right-4 z-50 flex items-center gap-3 px-4 py-2 rounded-xl shadow-2xl
-                  bg-black/20 backdrop-blur-lg border border-[#00ffc3]/50">
+                <div className="fixed bottom-4 right-4 z-50 flex items-center gap-3 px-4 py-2 rounded-xl shadow-2xl bg-black/20 backdrop-blur-lg border border-[#00ffc3]/50">
                   <span className="text-sm text-[#00ffc3] font-['audiowide'] drop-shadow-[0_0_4px_#00ffc3]">
                     Logged in as {session.user.email}
                   </span>
@@ -247,12 +306,12 @@ function MainComponent() {
 
 
 
-         
-           
 
-          {/* Mobile Menu */}
-          {/* Hamburger button – unchanged */}
-          <button
+
+
+            {/* Mobile Menu */}
+            {/* Hamburger button – unchanged */}
+            <button
               onClick={toggleMenu}
               className="md:hidden text-[#00ffc3] hover:text-[#00d4a3] transition-colors focus:outline-none"
             >
@@ -970,7 +1029,7 @@ function MainComponent() {
       {/* Scary Internal Popup */}
       {showInternalPopup && (
         <div className="fixed inset-0 bg-black bg-opacity-90 backdrop-blur-sm flex items-center justify-center z-50 animate-horror-entrance">
-          {/* Scary animated elements */}
+          {/* Scary animated elements (unchanged) */}
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
             <div className="absolute animate-skull-float-1">
               <i className="fas fa-skull text-6xl text-[#ff0000] opacity-20"></i>
@@ -993,11 +1052,7 @@ function MainComponent() {
           <div className="absolute top-0 left-1/4 w-1 h-full bg-gradient-to-b from-[#ff0000] to-transparent opacity-30 animate-blood-drip"></div>
           <div className="absolute top-0 right-1/3 w-1 h-full bg-gradient-to-b from-[#ff0000] to-transparent opacity-20 animate-blood-drip-2"></div>
 
-          <div className="relative bg-gradient-to-br from-[#0f0f0f] via-[#1a0000] to-[#0f0f0f] 
-p-8 rounded-2xl border-2 border-[#ff0000] max-w-md w-full mx-4 
-shadow-[0_0_50px_rgba(255,0,0,0.5)] animate-horror-popup 
-overflow-y-auto max-h-[90vh]">
-
+          <div className="relative bg-gradient-to-br from-[#0f0f0f] via-[#1a0000] to-[#0f0f0f] p-8 rounded-2xl border-2 border-[#ff0000] max-w-md w-full mx-4 shadow-[0_0_50px_rgba(255,0,0,0.5)] animate-horror-popup overflow-y-auto max-h-[90vh]">
             {/* Glitch overlay */}
             <div className="absolute inset-0 bg-[#ff0000] opacity-0 animate-glitch-overlay"></div>
 
@@ -1014,57 +1069,109 @@ overflow-y-auto max-h-[90vh]">
               <i className="fas fa-times text-[#0f0f0f]"></i>
             </button>
 
-            {/* Flickering text effect */}
-            <div className="text-center relative z-10">
-              <h3 className="text-3xl font-bold mb-8 text-[#ff0000] font-['audiowide'] animate-flicker-text flex items-center justify-center gap-3">
-                <i className="fas fa-exclamation-triangle text-lg animate-shake"></i>
-                WARNING
-                <i className="fas fa-skull text-lg animate-shake delay-100"></i>
-              </h3>
+            {/* STATE-SWITCH AREA  */}
+            {loading ? (
+              // 1.  BLOOD-RED "VERIFYING"
+              <div className="text-center relative z-10">
+                <i className="fas fa-heartbeat text-5xl text-red-400 mb-4 animate-ping"></i>
+                <h2 className="text-3xl font-bold text-red-400 font-['creepster'] animate-flicker-text">
+                  Verifying identity…
+                </h2>
+                <p className="text-red-300 mt-2 animate-typewriter">Please wait…</p>
+              </div>
+            ) : showVerify && userInfo ? (
 
-              <div className="space-y-6 mb-8">
-                <div className="bg-[#1a0000] p-6 rounded-xl border border-[#ff0000] animate-horror-glow">
-                  <i className="fas fa-user-secret text-4xl text-[#ff0000] mb-4 animate-float-scary"></i>
-                  <h4 className="text-[#ff0000] font-['audiowide'] text-xl mb-4 animate-flicker-text">
-                    RESTRICTED ACCESS
-                  </h4>
-                  <p className="text-[#ffaaaa] text-sm mb-4 animate-typewriter">
-                    This will redirect to internal app management and only for
-                    organisers
-                  </p>
-                  <p className="text-[#ff0000] font-bold animate-pulse-horror">
-                    If you are organiser then continue...
-                  </p>
+
+              /*  GREEN BLOOD SUCCESS  */
+              <GreenSuccess data={userInfo} />
+
+            ) : (
+              // 3. ORIGINAL RED WARNING UI
+              <>
+                <div className="text-center relative z-10">
+                  <h3 className="text-3xl font-bold mb-8 text-[#ff0000] font-['audiowide'] animate-flicker-text flex items-center justify-center gap-3">
+                    <i className="fas fa-exclamation-triangle text-lg animate-shake"></i>
+                    WARNING
+                    <i className="fas fa-skull text-lg animate-shake delay-100"></i>
+                  </h3>
+
+                  <div className="space-y-6 mb-8">
+                    <div className="bg-[#1a0000] p-6 rounded-xl border border-[#ff0000] animate-horror-glow">
+                      <i className="fas fa-user-secret text-4xl text-[#ff0000] mb-4 animate-float-scary"></i>
+                      <h4 className="text-[#ff0000] font-['audiowide'] text-xl mb-4 animate-flicker-text">
+                        RESTRICTED ACCESS
+                      </h4>
+                      <p className="text-[#ffaaaa] text-sm mb-4 animate-typewriter">
+                        This will redirect to internal app management and only for
+                        organisers
+                      </p>
+                      <p className="text-[#ff0000] font-bold animate-pulse-horror">
+                        If you are organiser then continue...
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-4 justify-center">
+                    <button
+                      onClick={closeInternalPopup}
+                      className="bg-[#333] text-[#fff] px-6 py-3 rounded-lg font-bold hover:bg-[#555] transition-all duration-300 font-['audiowide'] transform hover:scale-105"
+                    >
+                      <i className="fas fa-arrow-left mr-2"></i>
+                      Escape
+                    </button>
+                    <button
+
+                      onClick={async () => {
+                        setLoading(true);
+                        const res = await fetch("/api/checkOrganiser");
+                        const data = await res.json();
+                        setLoading(false);
+                        if (data.allowed) {
+                          setUserInfo({
+                            name: data.name,
+                            email: data.email,
+                            department: data.department,
+                            position: data.position || "—",
+                          });
+                          setShowVerify(true);
+                          setTimeout(() => router.push("/Internal"), 7500);
+                        }  else {
+                            router.push("/Internal");   // ← send to /Internal
+                                                  }
+                      }}
+                      disabled={loading}
+                      className="bg-[#ff0000] text-[#0f0f0f] px-6 py-3 rounded-lg font-bold font-['audiowide'] transition-all duration-300 transform hover:scale-105 animate-pulse-horror hover:shadow-[0_0_30px_rgba(255,0,0,0.7)] disabled:opacity-60 disabled:cursor-not-allowed"
+                    >
+                      {loading ? (
+                        <>
+                          <i className="fas fa-spinner fa-spin mr-2" />
+                          Verifying…
+                        </>
+                      ) : (
+                        <>
+                          <i className="fas fa-door-open mr-2" />
+                          PROCEED
+                        </>
+                      )}
+
+                    </button>
+                    {/*  SWITCH INSIDE THE SAME POPUP  */}
+                    {loading ? (
+                      <StarAnimationOverlay />
+                    ) : showVerify && userInfo ? (
+                      <GreenSuccess data={userInfo} />
+                    ) : null}
+                  </div>
+
+                  <div className="mt-6 pt-4 border-t border-[#ff0000] opacity-50">
+                    <p className="text-[#ffaaaa] text-xs animate-flicker-text">
+                      <i className="fas fa-skull-crossbones mr-2 text-[#ff0000]"></i>
+                      Enter at your own risk...
+                    </p>
+                  </div>
                 </div>
-              </div>
-
-              <div className="flex gap-4 justify-center">
-                <button
-                  onClick={closeInternalPopup}
-                  className="bg-[#333] text-[#fff] px-6 py-3 rounded-lg font-bold hover:bg-[#555] transition-all duration-300 font-['audiowide'] transform hover:scale-105"
-                >
-                  <i className="fas fa-arrow-left mr-2"></i>
-                  Escape
-                </button>
-                <button
-                  onClick={() => {
-                    window.open("/Internal", "_blank"); // Opens Internal page in new tab
-                    closeInternalPopup();
-                  }}
-                  className="bg-[#ff0000] text-[#fff] px-6 py-3 rounded-lg font-bold hover:bg-[#cc0000] transition-all duration-300 font-['audiowide'] transform hover:scale-105 animate-pulse-horror hover:shadow-[0_0_30px_rgba(255,0,0,0.7)]"
-                >
-                  <i className="fas fa-door-open mr-2 animate-shake"></i>
-                  PROCEED
-                </button>
-              </div>
-
-              <div className="mt-6 pt-4 border-t border-[#ff0000] opacity-50">
-                <p className="text-[#ffaaaa] text-xs animate-flicker-text">
-                  <i className="fas fa-skull-crossbones mr-2 text-[#ff0000]"></i>
-                  Enter at your own risk...
-                </p>
-              </div>
-            </div>
+              </>
+            )}
           </div>
         </div>
       )}
@@ -1747,3 +1854,68 @@ overflow-y-auto max-h-[90vh]">
 
 
 export default MainComponent;
+
+
+
+
+
+
+
+ function GreenSuccess({ data }) {
+  const [text, setText] = useState("");
+  const [showDetails, setShowDetails] = useState(false);
+
+  // safe data
+  const safe = {
+    name: data?.name ?? "—",
+    email: data?.email ?? "—",
+    department: data?.department ?? "—",
+    position: data?.position ?? "—",
+  };
+
+  useEffect(() => {
+    const lines = ["Please wait… verifying your identity…", "Identity verified."];
+    let lineIdx = 0;
+    let charIdx = 0;
+
+    const tick = () => {
+      if (lineIdx >= lines.length) {
+        setTimeout(() => setShowDetails(true), 400);
+        return;
+      }
+      const cur = lines[lineIdx];
+      const slice = cur.slice(0, ++charIdx);
+      setText(slice);
+
+      if (charIdx === cur.length) {
+        lineIdx++;
+        charIdx = 0;
+        setTimeout(tick, 350);
+      } else {
+        setTimeout(tick, 60);
+      }
+    };
+    tick();
+  }, []);
+
+  return (
+    <div className="w-full max-w-sm mx-auto">
+      <p className="text-center text-green-400 text-lg font-mono mb-2">
+        {text}
+      </p>
+
+      {showDetails && (
+        <div className="bg-black/90 border border-green-500 rounded-xl p-4 text-sm font-mono space-y-2 text-green-300">
+          <h2 className="text-center text-xl font-bold mb-2">IDENTITY VERIFIED</h2>
+
+          <div className="flex justify-between"><span>Name</span><span>{safe.name}</span></div>
+          <div className="flex justify-between"><span>Email</span><span className="break-all">{safe.email}</span></div>
+          <div className="flex justify-between"><span>Department</span><span>{safe.department}</span></div>
+          <div className="flex justify-between"><span>Position</span><span>{safe.position}</span></div>
+
+          <p className="text-center text-green-300 mt-2">Redirecting now…</p>
+        </div>
+      )}
+    </div>
+  );
+}

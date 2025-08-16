@@ -1,18 +1,29 @@
+// src/app/api/checkOrganiser/route.js
 import { getServerSession } from "next-auth/next";
-import { authOptions } from "../auth/[...nextauth]/route"; // adjust path if needed
+import { authOptions } from "../auth/[...nextauth]/route";
 import { getFirestore } from "firebase-admin/firestore";
 
-export async function GET(req) {
+export async function GET() {
   const session = await getServerSession(authOptions);
   if (!session) {
     return new Response(JSON.stringify({ allowed: false }), { status: 401 });
   }
 
-  const db = getFirestore();
+  const db  = getFirestore();
   const doc = await db.collection("organisers").doc(session.user.email).get();
-  if (!doc.exists) {
-    return new Response(JSON.stringify({ allowed: false }), { status: 403 });
-  }
 
-  return Response.json({ allowed: true, ...doc.data() });
+  const payload = {
+    allowed: doc.exists,
+    name:  doc.data()?.Name ?? "—",
+    email: doc.id,
+    department: doc.data()?.Department ?? "—",
+    position: doc.data()?.Position ?? "—",
+  };
+
+  console.log("🔍  Real-time check:", session.user.email, payload);
+
+  return Response.json(payload, {
+    status: 200,
+    headers: { "Cache-Control": "no-store" },
+  });
 }
