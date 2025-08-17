@@ -1,4 +1,3 @@
-cat > src/app/api/checkorganiser/route.js << 'EOF'
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "../auth/[...nextauth]/route";
 import { db } from "@/firebase/config";
@@ -22,4 +21,3 @@ export async function GET() {
     position: data?.Position || "—",
   });
 }
-EOF

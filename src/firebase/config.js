@@ -22,3 +22,4 @@ if (typeof window !== "undefined") {
 }
 
 export { app, analytics };
+export const db = getFirestore(app);
