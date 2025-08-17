@@ -1,4 +1,4 @@
-// src/app/layout.js
+ // src/app/layout.js
 import 'next/font/google';
 import '@fontsource/audiowide/400.css';
 import { Audiowide } from 'next/font/google';

@@ -1,10 +1,5 @@
 {
   "pages": {
-    "/api/auth/[...nextauth]/route": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/api/auth/[...nextauth]/route.js"
-    ],
     "/layout": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
@@ -17,30 +12,35 @@
       "static/css/app/page.css",
       "static/chunks/app/page.js"
     ],
-    "/atlas/page": [
+    "/api/auth/[...nextauth]/route": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/atlas/page.js"
+      "static/chunks/app/api/auth/[...nextauth]/route.js"
     ],
-    "/Internal/page": [
+    "/home/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/Internal/page.js"
+      "static/chunks/app/home/page.js"
     ],
     "/api/checkOrganiser/route": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/api/checkOrganiser/route.js"
     ],
-    "/api/atlas/route": [
+    "/Internal/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/api/atlas/route.js"
+      "static/chunks/app/Internal/page.js"
     ],
-    "/home/page": [
+    "/updates/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/home/page.js"
+      "static/chunks/app/updates/page.js"
+    ],
+    "/api/isAdmin/route": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/api/isAdmin/route.js"
     ]
   }
 }
