@@ -1,13 +1,14 @@
 // src/app/api/atlas/route.js
 import { NextResponse } from 'next/server';
 import admin from 'firebase-admin';
-import serviceAccount from '../../../../serviceAccountKey.json';
+import { cert } from "firebase-admin/app";
+const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
 
 /* initialise once */
 if (!admin.apps.length) {
-  admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount)
-  });
+    admin.initializeApp({
+        credential: cert(serviceAccount),
+      });
 }
 
 const db = admin.firestore();
