@@ -1,14 +1,14 @@
 {
-  "/api/admin-log/route": "/api/admin-log",
   "/_not-found/page": "/_not-found",
-  "/api/auth/[...nextauth]/route": "/api/auth/[...nextauth]",
-  "/api/atlas/route": "/api/atlas",
+  "/api/admin-log/route": "/api/admin-log",
   "/api/checkOrganiser/route": "/api/checkOrganiser",
+  "/api/atlas/route": "/api/atlas",
+  "/api/auth/[...nextauth]/route": "/api/auth/[...nextauth]",
   "/api/isAdmin/route": "/api/isAdmin",
-  "/Internal/page": "/Internal",
   "/about/page": "/about",
+  "/Internal/page": "/Internal",
   "/home/page": "/home",
+  "/page": "/",
   "/atlas/page": "/atlas",
-  "/updates/page": "/updates",
-  "/page": "/"
+  "/updates/page": "/updates"
 }
