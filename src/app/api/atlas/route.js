@@ -1,14 +1,18 @@
 // src/app/api/atlas/route.js
 import { NextResponse } from 'next/server';
 import admin from 'firebase-admin';
-import { cert } from 'firebase-admin/app';
+
+import { cert } from "firebase-admin/app";
 
 // 1) read the service account safely
-let serviceAccount;
-try {
-  serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT ?? '{}');
-} catch {
-  serviceAccount = null;
+if (!admin.apps.length) {
+  admin.initializeApp({
+    credential: cert({
+      projectId: process.env.FIREBASE_PROJECT_ID,
+      clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+      privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, "\n"),
+    }),
+  });
 }
 
 // 2) initialise Firebase once

@@ -1,0 +1,14 @@
+{
+  "/api/admin-log/route": "/api/admin-log",
+  "/_not-found/page": "/_not-found",
+  "/api/auth/[...nextauth]/route": "/api/auth/[...nextauth]",
+  "/api/atlas/route": "/api/atlas",
+  "/api/checkOrganiser/route": "/api/checkOrganiser",
+  "/api/isAdmin/route": "/api/isAdmin",
+  "/Internal/page": "/Internal",
+  "/about/page": "/about",
+  "/home/page": "/home",
+  "/atlas/page": "/atlas",
+  "/updates/page": "/updates",
+  "/page": "/"
+}
