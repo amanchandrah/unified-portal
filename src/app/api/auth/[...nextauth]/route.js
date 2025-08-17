@@ -18,7 +18,12 @@ if (!admin.apps.length) {
   });
 }
 
-const handler = NextAuth({
+
+
+
+
+// The NextAuth config object (unchanged)
+const authOptions = {
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID,
@@ -30,29 +35,15 @@ const handler = NextAuth({
     strategy: "jwt",
     maxAge: 30 * 24 * 60 * 60, // 30 days
   },
-  // cookies: {
-  //   sessionToken: {
-  //     name: `__Secure-next-auth.session-token`,
-  //     options: {
-  //       httpOnly: true,
-  //       sameSite: "lax",
-  //       path: "/",
-  //       secure: true, // Ensure this is true in production
-  //       domain: process.env.NEXTAUTH_URL?.replace(/https?:\/\//, "") || null,
-  //     },
-  //   },
-  // },
   callbacks: {
     async signIn({ profile }) {
       const email = profile?.email || "";
       console.log("📧  Google email:", email);
 
-      // ✅ Add specific allowed emails here
       const allowedEmails = new Set([
-        // Example entries — remove or replace with your own
         "ghostkillerdeadliest@gmail.com",
         "person2@yahoo.com",
-        "admin@iitm.ac.in"
+        "admin@iitm.ac.in",
       ]);
 
       const ok =
@@ -69,22 +60,26 @@ const handler = NextAuth({
       return session;
     },
     async redirect({ url, baseUrl }) {
-      // Allow relative URLs like /home/page.jsx
       if (url.startsWith("/")) return `${baseUrl}${url}`;
-      // Allow absolute URLs on the same origin
       try {
         const parsedUrl = new URL(url);
         if (parsedUrl.origin === baseUrl) return url;
       } catch {
-        // If URL is invalid, fallback
+        // fallback
       }
-      // Default fallback
       return `${baseUrl}/home`;
     },
   },
   pages: {
-    signIn: '/', // Set your login page path
+    signIn: "/", // login page path
   },
-});
+};
 
+// Handler for NextAuth
+const handler = NextAuth(authOptions);
+
+// Route exports
 export { handler as GET, handler as POST };
+
+// ✅ NEW: named export so other files can import authOptions
+export { authOptions };
