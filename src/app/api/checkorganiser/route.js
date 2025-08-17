@@ -1,3 +1,4 @@
+cat > src/app/api/checkorganiser/route.js << 'EOF'
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "../auth/[...nextauth]/route";
 import { db } from "@/firebase/config";
@@ -15,9 +16,10 @@ export async function GET() {
   const data = snap.data();
   return Response.json({
     allowed: true,
-    name: data.Name || "—",
+    name: data?.Name || "—",
     email: snap.id,
-    department: data.Department || "—",
-    position: data.Position || "—",
+    department: data?.Department || "—",
+    position: data?.Position || "—",
   });
 }
+EOF
