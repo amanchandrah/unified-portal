@@ -1121,24 +1121,24 @@ function MainComponent() {
                     </button>
                     <button
 
-                      onClick={async () => {
-                        setLoading(true);
-                        const res = await fetch("/api/checkOrganiser");
-                        const data = await res.json();
-                        setLoading(false);
-                        if (data.allowed) {
-                          setUserInfo({
-                            name: data.name,
-                            email: data.email,
-                            department: data.department,
-                            position: data.position || "—",
-                          });
-                          setShowVerify(true);
-                          setTimeout(() => router.push("/Internal"), 7500);
-                        }  else {
-                            router.push("/Internal");   // ← send to /Internal
-                                                  }
-                      }}
+onClick={async () => {
+  setLoading(true);
+  const res = await fetch("/api/checkOrganiser", { credentials: "include" });
+  const data = await res.json();
+  setLoading(false);
+  if (data.allowed) {
+    setUserInfo({
+      name: data.name,
+      email: data.email,
+      department: data.department,
+      position: data.position || "—",
+    });
+    setShowVerify(true);
+    setTimeout(() => router.push("/Internal"), 9000);
+  } else {
+    router.push("/Internal"); // will show AccessDenied
+  }
+}}
                       disabled={loading}
                       className="bg-[#ff0000] text-[#0f0f0f] px-6 py-3 rounded-lg font-bold font-['audiowide'] transition-all duration-300 transform hover:scale-105 animate-pulse-horror hover:shadow-[0_0_30px_rgba(255,0,0,0.7)] disabled:opacity-60 disabled:cursor-not-allowed"
                     >

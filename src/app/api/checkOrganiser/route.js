@@ -1,7 +1,7 @@
 // src/app/api/checkOrganiser/route.js
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "../auth/[...nextauth]/route";
-import { getFirestore } from "firebase-admin/firestore";
+import { db } from "@/firebase/config";
 
 export async function GET() {
   const session = await getServerSession(authOptions);

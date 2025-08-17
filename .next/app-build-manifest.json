@@ -32,15 +32,20 @@
       "static/chunks/main-app.js",
       "static/chunks/app/Internal/page.js"
     ],
+    "/atlas/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/atlas/page.js"
+    ],
+    "/api/atlas/route": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/api/atlas/route.js"
+    ],
     "/updates/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/updates/page.js"
-    ],
-    "/api/isAdmin/route": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/api/isAdmin/route.js"
     ]
   }
 }
